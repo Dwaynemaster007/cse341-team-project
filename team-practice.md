@@ -8,5 +8,6 @@
 - Never commit `.env` or any file containing passwords or connection strings.
 - Include testing notes in every pull request.
 - Ask for review in the team Microsoft Teams channel when a PR is ready.
+- Address all review comments and make the necessary changes before merging a pull request.
 
 
