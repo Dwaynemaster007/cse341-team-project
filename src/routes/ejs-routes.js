@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { homePage, aboutPage, testErrorPage } from './index.js';
 import { trainsPage } from './trains.js';
+import { listTripsPage, tripDetailsPage } from '../controllers/trips.js';
 import railTripsRouter from './trips.js';
 
 /**
@@ -16,10 +17,12 @@ router.get('/about', aboutPage);
 router.get('/trains', trainsPage);
 router.get('/500', testErrorPage);
 
-// ===== Legacy trip pages (FS1 Trips and FS3 Bookings move these into controllers) =====
-router.use('/trips', railTripsRouter);
-
 // ===== FS1: Trips pages =====
+router.get('/trips', listTripsPage);
+router.get('/trips/:tripId', tripDetailsPage);
+
+// ===== Legacy trip routes (FS3 Bookings) =====
+router.use('/trips', railTripsRouter);
 
 // ===== FS2: Schedules pages =====
 
