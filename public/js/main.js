@@ -10,7 +10,7 @@ const hookRegionSorter = () => {
             } else {
                 url.searchParams.delete('region');
             }
-            
+
             window.location.href = url.toString();
         });
     }
@@ -28,7 +28,7 @@ const hookSeasonSorter = () => {
             } else {
                 url.searchParams.delete('season');
             }
-            
+
             window.location.href = url.toString();
         });
     }
@@ -88,8 +88,77 @@ const hookTrainsCatalog = async () => {
     }
 };
 
+const hookStationInfo = () => {
+    const buttons = document.querySelectorAll('.station-info-btn');
+    const panel = document.getElementById('station-info');
+    const content = document.getElementById('station-info-content');
+    const closeButton = document.getElementById('close-station-info');
+
+    if (!buttons.length || !panel || !content || !closeButton) return;
+
+    buttons.forEach((button) => {
+        button.addEventListener('click', async () => {
+            const stationId = button.dataset.stationId;
+
+            panel.hidden = false;
+            content.textContent = 'Loading station information...';
+
+            try {
+                const response = await fetch(
+                    `/api/stations/${encodeURIComponent(stationId)}`
+                );
+
+                if (!response.ok) {
+                    throw new Error('Unable to fetch station information.');
+                }
+
+                const station = await response.json();
+
+                const heading = document.createElement('h3');
+                heading.textContent = station.name;
+
+                const location = document.createElement('p');
+                location.textContent =
+                    `${station.prefecture}, ${station.region}`;
+
+                const description = document.createElement('p');
+                description.textContent = station.description;
+
+                const facilitiesHeading = document.createElement('h4');
+                facilitiesHeading.textContent = 'Facilities';
+
+                const facilitiesList = document.createElement('ul');
+
+                station.facilities.forEach((facility) => {
+                    const item = document.createElement('li');
+                    item.textContent = facility;
+                    facilitiesList.appendChild(item);
+                });
+
+                content.replaceChildren(
+                    heading,
+                    location,
+                    description,
+                    facilitiesHeading,
+                    facilitiesList
+                );
+            } catch (error) {
+                content.textContent =
+                    'Unable to load station information. Please try again.';
+            }
+        });
+    });
+
+    closeButton.addEventListener('click', () => {
+        panel.hidden = true;
+        content.replaceChildren();
+    });
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     hookRegionSorter();
     hookSeasonSorter();
     hookTrainsCatalog();
+    hookStationInfo();
 });
+;
