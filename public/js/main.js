@@ -88,8 +88,62 @@ const hookTrainsCatalog = async () => {
     }
 };
 
+const hookBookingsCatalog = async () => {
+    const listEl = document.getElementById('bookings-list');
+    const templateEl = document.getElementById('booking-card-template');
+
+    if (!listEl || !templateEl) return;
+
+    try {
+        const response = await fetch('/api/bookings');
+
+        if (!response.ok) {
+            throw new Error(`Failed to load bookings (${response.status})`);
+        }
+
+        const bookings = await response.json();
+
+        const fragment = document.createDocumentFragment();
+
+        bookings.forEach((booking) => {
+            const card = templateEl.content.cloneNode(true);
+
+            card.querySelector('[data-field="id"]').textContent = booking.id;
+            card.querySelector('[data-field="tripId"]').textContent = booking.tripId;
+            card.querySelector('[data-field="scheduleId"]').textContent = booking.scheduleId;
+            card.querySelector('[data-field="ticketClass"]').textContent = booking.ticketClass;
+            card.querySelector('[data-field="selectedDay"]').textContent = booking.selectedDay;
+            card.querySelector('[data-field="createdAt"]').textContent = booking.createdAt;
+
+            const passengersList = card.querySelector('[data-field="passengers"]');
+
+            booking.passengers.forEach((passenger) => {
+                const li = document.createElement('li');
+                li.textContent = `${passenger.firstName} ${passenger.lastName}`;
+                passengersList.appendChild(li);
+            });
+
+            fragment.appendChild(card);
+        });
+
+        listEl.replaceChildren(fragment);
+        document.getElementById('bookings-loading').hidden = true;
+        document.getElementById('bookings-empty').hidden = bookings.length > 0;
+
+    } catch (error) {
+        console.error('Error loading bookings:', error);
+
+        document.getElementById('bookings-loading').hidden = true;
+
+        const errorEl = document.getElementById('bookings-error');
+        errorEl.textContent = 'Unable to load bookings. Please try again.';
+        errorEl.hidden = false;
+        }
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     hookRegionSorter();
     hookSeasonSorter();
     hookTrainsCatalog();
+    hookBookingsCatalog();
 });
