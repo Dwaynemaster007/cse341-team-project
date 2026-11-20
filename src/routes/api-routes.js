@@ -68,6 +68,60 @@ router.get('/api/trains', trainsApi);
 
 // ===== FS1: Trips API =====
 
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     Trip:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: Custom trip id
+ *           example: alpine-panorama
+ *         name:
+ *           type: string
+ *           example: Alpine Panorama Express
+ *         description:
+ *           type: string
+ *           example: Journey through the Japanese Alps with stunning mountain views and traditional villages.
+ *         region:
+ *           type: string
+ *           example: central
+ *         startStation:
+ *           type: string
+ *           description: Station id (see the stations collection)
+ *           example: nagoya
+ *         endStation:
+ *           type: string
+ *           example: toyama
+ *         duration:
+ *           type: string
+ *           example: 4.5 hours
+ *         distance:
+ *           type: number
+ *           description: Distance in kilometres
+ *           example: 180
+ *         highlights:
+ *           type: array
+ *           items:
+ *             type: string
+ *           example:
+ *             - Mount Tateyama views
+ *             - Hida River gorge
+ *             - Traditional alpine villages
+ *         bestSeason:
+ *           type: string
+ *           example: autumn
+ *         operatingMonths:
+ *           type: array
+ *           items:
+ *             type: integer
+ *           example: [4, 5, 6, 7, 8, 9, 10, 11]
+ *         imageUrl:
+ *           type: string
+ *           example: /images/routes/alpine-panorama.png
+ */
 
 /**
  * @openapi
@@ -84,42 +138,9 @@ router.get('/api/trains', trainsApi);
  *             schema:
  *               type: array
  *               items:
- *                 type: object
- *                 properties:
- *                   id:
- *                     type: string
- *                   name:
- *                     type: string
- *                   region:
- *                     type: string
- *                   startStation:
- *                     type: string
- *                   endStation:
- *                     type: string
- *                   duration:
- *                     type: string
- *                   distance:
- *                     type: number
- *                   bestSeason:
- *                     type: string
- *             example:
- *               - id: alpine-panorama
- *                 name: Alpine Panorama
- *                 region: Alps
- *                 startStation: Zurich
- *                 endStation: Zermatt
- *                 duration: 8 hours
- *                 distance: 300
- *                 bestSeason: Summer
+ *                 $ref: '#/components/schemas/Trip'
  *       500:
- *         description: Failed to fetch trips
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
+ *         $ref: '#/components/responses/ServerError'
  */
 router.get('/api/trips', getAllTrips);
 
@@ -127,70 +148,34 @@ router.get('/api/trips', getAllTrips);
  * @openapi
  * /api/trips/{id}:
  *   get:
- *     summary: Get a trip by ID
+ *     summary: Get one trip by id
  *     tags:
  *       - Trips
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
+ *         description: The custom trip id, such as alpine-panorama
  *         schema:
  *           type: string
- *         description: Unique ID of the trip
+ *           example: alpine-panorama
  *     responses:
  *       200:
  *         description: Trip returned successfully
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 id:
- *                   type: string
- *                 name:
- *                   type: string
- *                 description:
- *                   type: string
- *                 region:
- *                   type: string
- *                 startStation:
- *                   type: string
- *                 endStation:
- *                   type: string
- *                 duration:
- *                   type: string
- *                 distance:
- *                   type: number
- *                 highlights:
- *                   type: array
- *                   items:
- *                     type: string
- *                 bestSeason:
- *                   type: string
- *                 operatingMonths:
- *                   type: array
- *                   items:
- *                     type: number
- *                 imageUrl:
- *                   type: string
+ *               $ref: '#/components/schemas/Trip'
  *       404:
  *         description: Trip not found
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
+ *               $ref: '#/components/schemas/Message'
+ *             example:
+ *               message: Trip not found
  *       500:
- *         description: Failed to fetch trip
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
+ *         $ref: '#/components/responses/ServerError'
  */
 router.get('/api/trips/:id', getTripById);
 

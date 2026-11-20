@@ -82,14 +82,14 @@ const hookTripsCatalog = async () => {
         regions.forEach((region) => {
             const option = document.createElement('option');
             option.value = region;
-            option.textContent = region;
+            option.textContent = region.charAt(0).toUpperCase() + region.slice(1);
             regionSelect.appendChild(option);
         });
 
         seasons.forEach((season) => {
             const option = document.createElement('option');
             option.value = season;
-            option.textContent = season;
+            option.textContent = season.charAt(0).toUpperCase() + season.slice(1);
             seasonSelect.appendChild(option);
         });
 
