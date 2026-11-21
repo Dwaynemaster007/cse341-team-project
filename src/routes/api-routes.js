@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { trainsApi } from './trains.js';
 import { getAllTrips, getTripById } from '../controllers/trips.js';
+import { getAllBookings as bookingsApi } from '../controllers/bookings.js';
 
 /**
  * Routes that expose JSON API endpoints.
@@ -196,7 +197,47 @@ router.get('/api/trips/:id', getTripById);
 // ===== FS2: Schedules API =====
 
 // ===== FS3: Bookings API =====
-
+/**
+ * @openapi
+ * /api/bookings:
+ *   get:
+ *     summary: Get all bookings
+ *     tags:
+ *       - Bookings
+ *     responses:
+ *       200:
+ *         description: Bookings returned successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *             example:
+ *               - id: JRW6GCNMRM
+ *                 createdAt: "2026-11-16T18:57:21.317Z"
+ *                 scheduleId: "1"
+ *                 tripId: alpine-panorama
+ *                 ticketClass: standard
+ *                 selectedDay: friday
+ *                 passengers:
+ *                   - firstName: Test
+ *                     lastName: Testy
+ *                     email: test@example.com
+ *                     phone: "4799999999"
+ *       500:
+ *         description: Failed to retrieve bookings
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *             example:
+ *               error: Failed to fetch bookings
+ */
+router.get('/api/bookings', bookingsApi);
 // ===== FS4: Ticket Classes API =====
 
 // ===== FS5: Stations API =====

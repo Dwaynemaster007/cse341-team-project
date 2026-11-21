@@ -1,0 +1,43 @@
+
+<%- include('./partials/header') %>
+
+<section class="bookings-hero">
+    <h1>Bookings Administration</h1>
+    <p>View and manage bookings across the Kizuna Rail network.</p>
+</section>
+
+<section class="bookings-catalog">
+    <div id="bookings-loading">Loading bookings...</div>
+    <div id="bookings-error" hidden></div>
+    <div id="bookings-empty" hidden>No bookings found.</div>
+
+    <div id="bookings-list"></div>
+
+    <template id="booking-card-template">
+        <article class="booking-card">
+            <h2>Booking: <span data-field="id"></span></h2>
+
+            <dl>
+                <dt>Trip</dt>
+                <dd data-field="tripId"></dd>
+
+                <dt>Schedule</dt>
+                <dd data-field="scheduleId"></dd>
+
+                <dt>Ticket Class</dt>
+                <dd data-field="ticketClass"></dd>
+
+                <dt>Selected Day</dt>
+                <dd data-field="selectedDay"></dd>
+
+                <dt>Created At</dt>
+                <dd data-field="createdAt"></dd>
+            </dl>
+
+            <h3>Passengers</h3>
+            <ul data-field="passengers"></ul>
+        </article>
+    </template>
+</section>
+
+<%- include('./partials/footer') %>
