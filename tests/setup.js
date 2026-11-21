@@ -1,3 +1,6 @@
+// The app requires a session secret; tests use a throwaway value.
+process.env.SESSION_SECRET ??= 'test-session-secret';
+
 import { afterAll, beforeAll, beforeEach, inject } from 'vitest';
 import { closeDb, connectToDb, getDb } from '../src/db/connect.js';
 import { initializeDatabase } from '../src/db/initialize.js';
