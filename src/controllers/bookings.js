@@ -1,11 +1,11 @@
+
 import { getDb } from '../db/connect.js';
 import { generateConfirmationCode } from '../includes/helpers.js';
 import {
-  getBookingById as findBookingById,
-  getAllBookings as findAllBookings,
-  createBooking
+    getBookingById as findBookingById,
+    getAllBookings as findAllBookings,
+    createBooking
 } from "../models/bookings.js";
-
 
 export async function getBookingById(req, res) {
     try {
@@ -15,11 +15,11 @@ export async function getBookingById(req, res) {
 
         if (!booking) {
             return res.status(404).json({
-            error: "Booking not found",
+                error: "Booking not found",
             });
         }
 
-    return res.status(200).json(booking);
+        return res.status(200).json(booking);
     } catch (error) {
         console.error("Error fetching booking:", error);
 
@@ -44,18 +44,23 @@ export async function getAllBookings(req, res) {
 }
 
 export function bookingsAdminPage(req, res) {
-  res.render('bookings', {
-    title: 'Bookings Admin'
-  });
+    res.render('bookings', {
+        title: 'Bookings Admin'
+    });
 }
 
 const bookingPage = async (req, res) => {
     const { scheduleId } = req.params;
 
     const db = getDb();
-    const schedule = await db.collection('schedules').findOne({ id: Number(scheduleId) });
-    const trip = await db.collection('trips').findOne({ id: schedule.tripId });
+    const schedule = await db.collection('schedules').findOne({
+        id: Number(scheduleId)
+    });
+    const trip = await db.collection('trips').findOne({
+        id: schedule.tripId
+    });
     const ticketClasses = await db.collection('ticketClasses').find({}).toArray();
+
     const ticketOptions = ticketClasses.map((ticketClass) => ({
         class: ticketClass.class,
         name: ticketClass.name,
@@ -67,7 +72,8 @@ const bookingPage = async (req, res) => {
     res.render('trips/book', {
         title: 'Book Trip',
         schedule,
-        ticketOptions
+        ticketOptions,
+        distance: trip.distance
     });
 };
 
@@ -78,7 +84,7 @@ const processBookingRequest = async (req, res) => {
             id: generateConfirmationCode(),
             createdAt: new Date().toISOString()
         };
-        
+
         await createBooking(booking);
 
         return res.redirect(`/trips/confirmation/${booking.id}`);
@@ -92,5 +98,3 @@ const processBookingRequest = async (req, res) => {
 };
 
 export { bookingPage, processBookingRequest };
-
-
