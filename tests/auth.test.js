@@ -73,6 +73,12 @@ describe('Login and logout', () => {
     expect(loginResponse.status).toBe(302);
     expect(loginResponse.headers.location).toBe('/');
 
+    // The header shows a sign-out button (and no login link) while signed in.
+    const homePage = await agent.get('/');
+    expect(homePage.text).toContain('action="/logout"');
+    expect(homePage.text).toContain('Sign out (Test Customer)');
+    expect(homePage.text).not.toContain('href="/login"');
+
     // A signed-in customer is sent away from the login page.
     const loginPage = await agent.get('/login');
     expect(loginPage.status).toBe(302);
@@ -82,6 +88,10 @@ describe('Login and logout', () => {
 
     const afterLogout = await agent.get('/login');
     expect(afterLogout.status).toBe(200);
+
+    const homeAfterLogout = await agent.get('/');
+    expect(homeAfterLogout.text).toContain('href="/login"');
+    expect(homeAfterLogout.text).not.toContain('action="/logout"');
   });
 
   test('uses the same 401 message for a wrong password and an unknown email', async () => {
