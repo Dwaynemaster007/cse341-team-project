@@ -12,6 +12,24 @@ const starterCollections = [
   ['trains', trains]
 ];
 
+const ROLE_NAMES = ['customer', 'admin'];
+
+/**
+ * Adds the standard roles if they are missing. Safe to run any number of times:
+ * it never deletes roles or users, so existing accounts keep their role references.
+ */
+const seedRoles = async (db) => {
+  const roles = db.collection('roles');
+
+  for (const name of ROLE_NAMES) {
+    await roles.updateOne(
+      { name },
+      { $setOnInsert: { name, createdAt: new Date(), updatedAt: new Date() } },
+      { upsert: true }
+    );
+  }
+};
+
 const initializeDatabase = async (db) => {
   if (!db) {
     throw new Error('A database connection is required to initialize data.');
@@ -26,6 +44,9 @@ const initializeDatabase = async (db) => {
   const bookings = db.collection('bookings');
   await bookings.deleteMany({});
   await bookings.createIndex({ id: 1 }, { unique: true });
+
+  // Users are intentionally NOT deleted here; only the roles they reference are ensured.
+  await seedRoles(db);
 };
 
-export { initializeDatabase, starterCollections };
+export { initializeDatabase, seedRoles, starterCollections, ROLE_NAMES };

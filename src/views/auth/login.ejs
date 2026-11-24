@@ -1,0 +1,31 @@
+<%- include('../partials/header') %>
+<section class="auth-page">
+    <h1><%= title %></h1>
+
+    <% if (query && query.registered) { %>
+        <p class="auth-success" role="status">Your account was created. Please sign in.</p>
+    <% } %>
+
+    <% if (errors.length > 0) { %>
+        <div class="auth-errors" role="alert">
+            <ul>
+                <% errors.forEach((message) => { %>
+                    <li><%= message %></li>
+                <% }) %>
+            </ul>
+        </div>
+    <% } %>
+
+    <form class="auth-form" method="POST" action="/login" novalidate>
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" value="<%= values.email || '' %>" autocomplete="email" required>
+
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" autocomplete="current-password" required>
+
+        <button type="submit">Sign in</button>
+    </form>
+
+    <p class="auth-switch">New to Kizuna Rail? <a href="/register">Create an account</a></p>
+</section>
+<%- include('../partials/footer') %>

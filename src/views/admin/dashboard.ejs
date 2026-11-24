@@ -1,0 +1,13 @@
+<%- include('../partials/header') %>
+<section class="admin-dashboard">
+    <h1>Welcome to the Admin Dashboard</h1>
+    <p>Signed in as <strong><%= user.displayName %></strong> (<%= user.email %>).</p>
+
+    <%# FS3, FS4 and FS5 add links to their admin pages in this list. %>
+    <ul class="admin-links"></ul>
+
+    <form method="POST" action="/logout">
+        <button type="submit">Sign out</button>
+    </form>
+</section>
+<%- include('../partials/footer') %>

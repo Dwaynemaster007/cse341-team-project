@@ -10,6 +10,15 @@ import {
 } from '../controllers/bookings.js';
 
 import confirmationPage from './confirm.js';
+import {
+  registerPage,
+  register,
+  loginPage,
+  login,
+  logout,
+  adminDashboardPage
+} from '../controllers/auth.js';
+import { requirePageRole } from '../middleware/auth.js';
 
 /**
  * Routes that render EJS pages.
@@ -39,5 +48,15 @@ router.get('/bookings-admin', bookingsAdminPage);
 // ===== FS4: Ticket Classes pages =====
 
 // ===== FS5: Stations pages =====
+
+// ===== Authentication (W04 FS1) =====
+router.get('/register', registerPage);
+router.post('/register', register);
+router.get('/login', loginPage);
+router.post('/login', login);
+router.post('/logout', logout);
+
+// ===== Admin pages (admin role required) =====
+router.get('/admin', requirePageRole('admin'), adminDashboardPage);
 
 export default router;
