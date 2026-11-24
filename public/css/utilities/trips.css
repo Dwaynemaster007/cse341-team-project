@@ -329,3 +329,58 @@
     min-width: 9ch;
     text-align: center;
 }
+
+/* W05 FS1: search and filter controls */
+.trips-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    margin-block: var(--space-md);
+    background: var(--clr-surface);
+    border: 1px solid var(--clr-border);
+    border-radius: var(--radius-lg);
+
+    .filter-field {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-xxs);
+        min-width: 150px;
+
+        label {
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+        }
+
+        select {
+            width: 100%;
+        }
+    }
+
+    .filter-search {
+        flex: 1 1 240px;
+
+        input {
+            width: 100%;
+        }
+    }
+
+    .filter-actions {
+        display: flex;
+        gap: var(--space-xs);
+    }
+
+    button.secondary {
+        background: transparent;
+        color: var(--clr-text-primary);
+        border: 1px solid var(--clr-border);
+    }
+
+    @media (max-width: 600px) {
+        .filter-field,
+        .filter-actions {
+            flex: 1 1 100%;
+        }
+    }
+}

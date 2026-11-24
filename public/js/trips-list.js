@@ -1,8 +1,9 @@
 /**
  * Trip list page (/trips).
  * Loads one page of trips at a time from /api/trips and renders the trip cards and the
- * pagination controls. The current page is kept in the URL (?page=2), so refreshing or sharing
- * the link opens the same page, and the browser Back button steps back through pages.
+ * pagination controls. The search, filters and page are kept in the URL
+ * (?q=gorge&region=kansai&page=2), so refreshing or sharing the link shows the same results,
+ * and the browser Back button steps back through earlier searches and pages.
  */
 const initTripsList = () => {
     const PAGE_SIZE = 10;
@@ -17,28 +18,51 @@ const initTripsList = () => {
     const prevButton = document.getElementById('trips-prev');
     const nextButton = document.getElementById('trips-next');
     const pageStatusEl = document.getElementById('trips-page-status');
+    const filtersForm = document.getElementById('trips-filters');
+    const searchInput = document.getElementById('trip-search');
+    const regionSelect = document.getElementById('region-filter');
+    const seasonSelect = document.getElementById('season-filter');
+    const clearButton = document.getElementById('trips-clear');
 
-    if (!listEl || !templateEl || !paginationEl) {
+    if (!listEl || !templateEl || !paginationEl || !filtersForm) {
         return;
     }
 
-    let currentPage = 1;
+    const FILTER_KEYS = ['q', 'region', 'season'];
+
+    // The current search: { page, q, region, season }. Empty filters are left out.
+    let state = { page: 1 };
     // Each request gets a number; responses from older requests are ignored, so clicking
     // Next quickly can never show an older page on top of a newer one.
     let latestRequest = 0;
 
-    const readPageFromUrl = () => {
-        const page = Number(new URLSearchParams(window.location.search).get('page'));
-        return Number.isInteger(page) && page >= 1 ? page : 1;
+    const readStateFromUrl = () => {
+        const params = new URLSearchParams(window.location.search);
+        const page = Number(params.get('page'));
+        const next = { page: Number.isInteger(page) && page >= 1 ? page : 1 };
+
+        FILTER_KEYS.forEach((key) => {
+            const value = (params.get(key) || '').trim();
+            if (value) {
+                next[key] = value;
+            }
+        });
+
+        return next;
     };
 
-    const writePageToUrl = (page, addHistoryEntry) => {
+    const writeStateToUrl = (addHistoryEntry) => {
         const url = new URL(window.location.href);
+        url.search = '';
 
-        if (page > 1) {
-            url.searchParams.set('page', page);
-        } else {
-            url.searchParams.delete('page');
+        FILTER_KEYS.forEach((key) => {
+            if (state[key]) {
+                url.searchParams.set(key, state[key]);
+            }
+        });
+
+        if (state.page > 1) {
+            url.searchParams.set('page', state.page);
         }
 
         if (addHistoryEntry) {
@@ -46,6 +70,31 @@ const initTripsList = () => {
         } else {
             window.history.replaceState({}, '', url);
         }
+    };
+
+    // Keeps the search box and dropdowns in step with the current search.
+    const showStateInForm = () => {
+        searchInput.value = state.q || '';
+        regionSelect.value = state.region || '';
+        seasonSelect.value = state.season || '';
+    };
+
+    // Reads the form into a new search, starting again at page 1.
+    const readStateFromForm = () => {
+        const next = { page: 1 };
+        const q = searchInput.value.trim();
+
+        if (q) {
+            next.q = q;
+        }
+        if (regionSelect.value) {
+            next.region = regionSelect.value;
+        }
+        if (seasonSelect.value) {
+            next.season = seasonSelect.value;
+        }
+
+        return next;
     };
 
     const createTripCard = (trip) => {
@@ -88,7 +137,9 @@ const initTripsList = () => {
 
         const first = (page - 1) * limit + 1;
         const last = Math.min(page * limit, totalItems);
-        summaryEl.textContent = `Showing ${first}–${last} of ${totalItems} trips`;
+        const isFiltered = FILTER_KEYS.some((key) => state[key]);
+        const noun = isFiltered ? 'matching trips' : 'trips';
+        summaryEl.textContent = `Showing ${first}–${last} of ${totalItems} ${noun}`;
 
         pageStatusEl.textContent = `Page ${page} of ${totalPages}`;
         prevButton.disabled = !hasPreviousPage;
@@ -96,8 +147,19 @@ const initTripsList = () => {
         paginationEl.hidden = totalPages <= 1;
     };
 
-    const loadTrips = async (page, { addHistoryEntry = false } = {}) => {
+    const showError = (message) => {
+        listEl.replaceChildren();
+        emptyEl.hidden = true;
+        paginationEl.hidden = true;
+        summaryEl.textContent = '';
+        errorEl.hidden = false;
+        errorEl.textContent = message;
+    };
+
+    const loadTrips = async (nextState, { addHistoryEntry = false } = {}) => {
         const requestNumber = ++latestRequest;
+        state = nextState;
+        showStateInForm();
 
         loadingEl.hidden = false;
         errorEl.hidden = true;
@@ -105,27 +167,40 @@ const initTripsList = () => {
         nextButton.disabled = true;
 
         try {
-            const params = new URLSearchParams({ page, limit: PAGE_SIZE });
+            const params = new URLSearchParams({ page: state.page, limit: PAGE_SIZE });
+            FILTER_KEYS.forEach((key) => {
+                if (state[key]) {
+                    params.set(key, state[key]);
+                }
+            });
+
             const response = await fetch(`/api/trips?${params}`);
-
-            if (!response.ok) {
-                throw new Error(`Failed to load trips (${response.status})`);
-            }
-
-            const { data, pagination } = await response.json();
+            const body = await response.json();
 
             if (requestNumber !== latestRequest) {
                 return;
             }
 
-            // An old link such as ?page=9 goes to the last page that exists instead of a blank list.
-            if (data.length === 0 && pagination.totalPages > 0 && page > pagination.totalPages) {
-                await loadTrips(pagination.totalPages);
+            if (response.status === 400) {
+                // e.g. a hand-edited link with ?region=mars: explain what was wrong.
+                writeStateToUrl(addHistoryEntry);
+                showError(body.errors.map((error) => error.message).join(' '));
                 return;
             }
 
-            currentPage = pagination.page;
-            writePageToUrl(currentPage, addHistoryEntry);
+            if (!response.ok) {
+                throw new Error(`Failed to load trips (${response.status})`);
+            }
+
+            const { data, pagination } = body;
+
+            // An old link such as ?page=9 goes to the last page that exists instead of a blank list.
+            if (data.length === 0 && pagination.totalPages > 0 && state.page > pagination.totalPages) {
+                await loadTrips({ ...state, page: pagination.totalPages });
+                return;
+            }
+
+            writeStateToUrl(addHistoryEntry);
 
             const fragment = document.createDocumentFragment();
             data.forEach((trip) => fragment.appendChild(createTripCard(trip)));
@@ -139,11 +214,7 @@ const initTripsList = () => {
             }
 
             console.error('Error loading trips:', error);
-            listEl.replaceChildren();
-            paginationEl.hidden = true;
-            summaryEl.textContent = '';
-            errorEl.hidden = false;
-            errorEl.textContent = 'Unable to load trips right now. Please try again in a moment.';
+            showError('Unable to load trips right now. Please try again in a moment.');
         } finally {
             if (requestNumber === latestRequest) {
                 loadingEl.hidden = true;
@@ -152,15 +223,33 @@ const initTripsList = () => {
     };
 
     const goToPage = async (page) => {
-        await loadTrips(page, { addHistoryEntry: true });
+        await loadTrips({ ...state, page }, { addHistoryEntry: true });
         summaryEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
 
-    prevButton.addEventListener('click', () => goToPage(currentPage - 1));
-    nextButton.addEventListener('click', () => goToPage(currentPage + 1));
-    window.addEventListener('popstate', () => loadTrips(readPageFromUrl()));
+    // A new search or filter always starts again at page 1.
+    filtersForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        loadTrips(readStateFromForm(), { addHistoryEntry: true });
+    });
 
-    loadTrips(readPageFromUrl());
+    regionSelect.addEventListener('change', () => {
+        loadTrips(readStateFromForm(), { addHistoryEntry: true });
+    });
+
+    seasonSelect.addEventListener('change', () => {
+        loadTrips(readStateFromForm(), { addHistoryEntry: true });
+    });
+
+    clearButton.addEventListener('click', () => {
+        loadTrips({ page: 1 }, { addHistoryEntry: true });
+    });
+
+    prevButton.addEventListener('click', () => goToPage(state.page - 1));
+    nextButton.addEventListener('click', () => goToPage(state.page + 1));
+    window.addEventListener('popstate', () => loadTrips(readStateFromUrl()));
+
+    loadTrips(readStateFromUrl());
 };
 
 initTripsList();

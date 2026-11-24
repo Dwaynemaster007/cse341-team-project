@@ -25,3 +25,31 @@ export async function getPaginatedTrips({ filter = {}, page, limit, sort, order 
 
     return { trips, totalItems };
 }
+
+// Seasons are listed in calendar order rather than alphabetically.
+const SEASON_ORDER = ['spring', 'summer', 'autumn', 'winter'];
+
+const bySeason = (a, b) => {
+    const rank = (season) => {
+        const index = SEASON_ORDER.indexOf(season);
+        return index === -1 ? SEASON_ORDER.length : index;
+    };
+    return rank(a) - rank(b) || a.localeCompare(b);
+};
+
+/**
+ * Returns the regions and seasons that currently exist in the trips collection.
+ * Used to build the filter dropdowns and to validate the region and season query parameters,
+ * so a new region added by a trip admin works without a code change.
+ */
+export async function getTripFilterOptions() {
+    const [regions, seasons] = await Promise.all([
+        Trip.distinct('region'),
+        Trip.distinct('bestSeason')
+    ]);
+
+    return {
+        regions: regions.sort(),
+        seasons: seasons.sort(bySeason)
+    };
+}

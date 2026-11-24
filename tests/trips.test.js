@@ -88,6 +88,103 @@ describe('GET /api/trips (pagination)', () => {
   });
 });
 
+describe('GET /api/trips (search and filters)', () => {
+  const ids = (response) => response.body.data.map((trip) => trip.id).sort();
+
+  test('region returns only trips in that region, and the metadata counts only matches', async () => {
+    const response = await request(app).get('/api/trips?region=kansai');
+
+    expect(response.status).toBe(200);
+    expect(response.body.data).toHaveLength(5);
+    expect(response.body.data.every((trip) => trip.region === 'kansai')).toBe(true);
+    expect(response.body.pagination).toMatchObject({ totalItems: 5, totalPages: 1, hasNextPage: false });
+    expect(response.body.query).toEqual({ region: 'kansai', sort: 'name', order: 'asc' });
+  });
+
+  test('season filters by best season', async () => {
+    const response = await request(app).get('/api/trips?season=winter');
+
+    expect(response.status).toBe(200);
+    expect(ids(response)).toEqual(['hida-snow-express', 'snow-country-limited', 'winter-wetlands']);
+  });
+
+  test('region and season work together', async () => {
+    const response = await request(app).get('/api/trips?region=kansai&season=summer');
+
+    expect(response.status).toBe(200);
+    expect(ids(response)).toEqual(['hozu-river-twilight', 'kishu-coast-limited']);
+    expect(response.body.pagination.totalItems).toBe(2);
+  });
+
+  test('q matches the name or the description, ignoring case', async () => {
+    const response = await request(app).get('/api/trips?q=GORGE');
+
+    expect(response.status).toBe(200);
+    expect(ids(response)).toEqual([
+      'gorge-explorer',
+      'hozu-river-twilight',
+      'kurobe-valley-connector',
+      'romantic-gorge'
+    ]);
+    expect(response.body.query.q).toBe('GORGE');
+  });
+
+  test('q, filters and pagination combine, and the counts cover every page', async () => {
+    const response = await request(app).get('/api/trips?q=river&region=kansai&limit=1&page=2');
+
+    expect(response.status).toBe(200);
+    expect(response.body.data).toHaveLength(1);
+    expect(response.body.pagination).toMatchObject({ page: 2, limit: 1, totalItems: 3, totalPages: 3 });
+    expect(response.body.query).toEqual({ q: 'river', region: 'kansai', sort: 'name', order: 'asc' });
+  });
+
+  test('search text with regular-expression characters is treated as plain text', async () => {
+    const response = await request(app).get(`/api/trips?q=${encodeURIComponent('.*(')}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.data).toEqual([]);
+  });
+
+  test('no matches returns 200 with an empty data array and zero totals', async () => {
+    const response = await request(app).get('/api/trips?q=volcano');
+
+    expect(response.status).toBe(200);
+    expect(response.body.data).toEqual([]);
+    expect(response.body.pagination).toMatchObject({ totalItems: 0, totalPages: 0, hasNextPage: false });
+  });
+
+  test.each([
+    ['q=', 'q'],
+    ['q=%20%20', 'q'],
+    [`q=${'a'.repeat(101)}`, 'q'],
+    ['q=a&q=b', 'q'],
+    ['region=mars', 'region'],
+    ['season=monsoon', 'season']
+  ])('rejects %s with 400 and names the field', async (queryString, field) => {
+    const response = await request(app).get(`/api/trips?${queryString}`);
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe('Invalid query parameters');
+    expect(response.body.errors).toEqual([expect.objectContaining({ field })]);
+  });
+
+  test('reports filter and pagination problems together', async () => {
+    const response = await request(app).get('/api/trips?region=mars&limit=0');
+
+    expect(response.status).toBe(400);
+    expect(response.body.errors.map((error) => error.field)).toEqual(['region', 'limit']);
+  });
+
+  test('GET /trips renders the region and season dropdown options', async () => {
+    const response = await request(app).get('/trips');
+
+    expect(response.status).toBe(200);
+    expect(response.text).toContain('<option value="kansai">Kansai</option>');
+    expect(response.text).toContain('<option value="winter">Winter</option>');
+    expect(response.text).toContain('id="trip-search"');
+  });
+});
+
 describe('GET /api/trips/:id', () => {
   test('returns one trip for an existing id', async () => {
     const response = await request(app).get('/api/trips/alpine-panorama');

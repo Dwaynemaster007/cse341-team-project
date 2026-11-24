@@ -2,19 +2,40 @@
 
     <h1>Scenic Train Trips</h1>
 
-    <%# Region and season filtering moves to the server in the next PR (W05 FS1 search and filtering);
-        filtering one page of results in the browser would hide trips on other pages. %>
-    <div id="filters" hidden>
-        Search by Region:
-        <select id="region-filter">
-            <option value="all">All Regions</option>
-        </select>
+    <%# Searching and filtering run on the server (/api/trips), so the counts and pages always
+        cover every matching trip, not just the trips already loaded in the browser. %>
+    <form class="trips-filters" id="trips-filters" role="search">
+        <div class="filter-field filter-search">
+            <label for="trip-search">Search trips</label>
+            <input type="search" id="trip-search" name="q" maxlength="100"
+                placeholder="Try &quot;gorge&quot; or &quot;snow&quot;" autocomplete="off">
+        </div>
 
-        Search by Season:
-        <select id="season-filter">
-            <option value="all">Any Season</option>
-        </select>
-    </div>
+        <div class="filter-field">
+            <label for="region-filter">Region</label>
+            <select id="region-filter" name="region">
+                <option value="">All Regions</option>
+                <% (locals.regions || []).forEach((region) => { %>
+                    <option value="<%= region %>"><%= region.charAt(0).toUpperCase() + region.slice(1) %></option>
+                <% }) %>
+            </select>
+        </div>
+
+        <div class="filter-field">
+            <label for="season-filter">Best Season</label>
+            <select id="season-filter" name="season">
+                <option value="">Any Season</option>
+                <% (locals.seasons || []).forEach((season) => { %>
+                    <option value="<%= season %>"><%= season.charAt(0).toUpperCase() + season.slice(1) %></option>
+                <% }) %>
+            </select>
+        </div>
+
+        <div class="filter-actions">
+            <button type="submit">Search</button>
+            <button type="button" id="trips-clear" class="secondary">Clear</button>
+        </div>
+    </form>
 
     <div class="trips-state" id="trips-loading">
         Loading trips...
@@ -23,7 +44,7 @@
     <div class="trips-state" id="trips-error" hidden></div>
 
     <div class="trips-state" id="trips-empty" hidden>
-        No trips match your selected filters.
+        No trips match your search. Try another keyword or clear the filters.
     </div>
 
     <p class="trips-summary" id="trips-summary" aria-live="polite"></p>

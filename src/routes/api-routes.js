@@ -191,11 +191,32 @@ router.get('/api/trains', trainsApi);
  * @openapi
  * /api/trips:
  *   get:
- *     summary: Get a page of trips
- *     description: Returns trips 10 at a time by default, sorted by name, with pagination metadata.
+ *     summary: Search, filter and page through trips
+ *     description: >
+ *       Returns trips 10 at a time by default, sorted by name. Every filter is optional and
+ *       filters can be combined. The pagination metadata counts only the trips that match.
  *     tags:
  *       - Trips
  *     parameters:
+ *       - in: query
+ *         name: q
+ *         description: Keyword search. Case-insensitive match anywhere in the trip name or description (1-100 characters).
+ *         schema:
+ *           type: string
+ *           maxLength: 100
+ *           example: gorge
+ *       - in: query
+ *         name: region
+ *         description: Only trips in this region. Allowed values are the regions that exist in the database.
+ *         schema:
+ *           type: string
+ *           example: kansai
+ *       - in: query
+ *         name: season
+ *         description: Only trips whose best season is this season.
+ *         schema:
+ *           type: string
+ *           example: autumn
  *       - $ref: '#/components/parameters/PageParam'
  *       - $ref: '#/components/parameters/LimitParam'
  *       - in: query
@@ -208,7 +229,7 @@ router.get('/api/trains', trainsApi);
  *       - $ref: '#/components/parameters/OrderParam'
  *     responses:
  *       200:
- *         description: One page of trips. A page past the last one returns an empty data array.
+ *         description: One page of matching trips. No matches, or a page past the last one, returns an empty data array.
  *         content:
  *           application/json:
  *             schema:
@@ -222,8 +243,17 @@ router.get('/api/trains', trainsApi);
  *                   $ref: '#/components/schemas/Pagination'
  *                 query:
  *                   type: object
- *                   description: The sort that was applied
+ *                   description: The search, filters and sort that were applied
  *                   properties:
+ *                     q:
+ *                       type: string
+ *                       example: gorge
+ *                     region:
+ *                       type: string
+ *                       example: kansai
+ *                     season:
+ *                       type: string
+ *                       example: autumn
  *                     sort:
  *                       type: string
  *                       example: name
@@ -231,7 +261,7 @@ router.get('/api/trains', trainsApi);
  *                       type: string
  *                       example: asc
  *       400:
- *         description: Invalid page, limit, sort or order
+ *         description: Invalid q, region, season, page, limit, sort or order
  *         content:
  *           application/json:
  *             schema:
