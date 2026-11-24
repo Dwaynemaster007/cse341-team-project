@@ -1,17 +1,42 @@
 import {
     getTripById as findTripById,
-    getAllTrips as findAllTrips
+    getPaginatedTrips
 } from '../models/trips.js';
 import { getDb } from '../db/connect.js';
+import { buildPagination, parsePagination } from '../includes/pagination.js';
+
+// Clients may only sort by these fields (an allowlist), never by arbitrary database fields.
+const TRIP_SORT_FIELDS = ['name', 'region', 'bestSeason', 'distance'];
 
 /**
- * API: GET /api/trips
- * Returns every trip as JSON.
+ * API: GET /api/trips?page=1&limit=10&sort=name&order=asc
+ * Returns one page of trips with pagination metadata.
+ * Invalid query parameters return 400 with a list of every problem found.
  */
 const getAllTrips = async (req, res) => {
+    const { errors, options } = parsePagination(req.query, {
+        sortFields: TRIP_SORT_FIELDS,
+        defaultSort: 'name'
+    });
+
+    if (errors.length > 0) {
+        return res.status(400).json({ message: 'Invalid query parameters', errors });
+    }
+
     try {
-        const trips = await findAllTrips();
-        return res.status(200).json(trips);
+        const { page, limit, sort, order } = options;
+        const { trips, totalItems } = await getPaginatedTrips({
+            page,
+            limit,
+            sort,
+            order: order === 'desc' ? -1 : 1
+        });
+
+        return res.status(200).json({
+            data: trips,
+            pagination: buildPagination({ page, limit, totalItems }),
+            query: { sort, order }
+        });
     } catch (error) {
         console.error('GET /api/trips failed:', error.message);
         return res.status(500).json({ message: 'Internal server error' });

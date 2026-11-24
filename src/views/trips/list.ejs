@@ -2,7 +2,9 @@
 
     <h1>Scenic Train Trips</h1>
 
-    <div id="filters">
+    <%# Region and season filtering moves to the server in the next PR (W05 FS1 search and filtering);
+        filtering one page of results in the browser would hide trips on other pages. %>
+    <div id="filters" hidden>
         Search by Region:
         <select id="region-filter">
             <option value="all">All Regions</option>
@@ -24,7 +26,15 @@
         No trips match your selected filters.
     </div>
 
+    <p class="trips-summary" id="trips-summary" aria-live="polite"></p>
+
     <div class="routes-grid" id="trips-list"></div>
+
+    <nav class="trips-pagination" id="trips-pagination" aria-label="Trip pages" hidden>
+        <button type="button" id="trips-prev">&larr; Previous</button>
+        <span class="trips-page-status" id="trips-page-status" aria-live="polite"></span>
+        <button type="button" id="trips-next">Next &rarr;</button>
+    </nav>
 
     <template id="trip-card-template">
         <div class="route-card">
@@ -82,5 +92,7 @@
             </div>
         </div>
     </template>
+
+    <script src="/js/trips-list.js"></script>
 
     <%- include('../partials/footer') %>

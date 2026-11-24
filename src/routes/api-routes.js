@@ -20,6 +20,70 @@ const router = Router();
  *       properties:
  *         message:
  *           type: string
+ *     Pagination:
+ *       type: object
+ *       description: Describes which slice of the results was returned.
+ *       properties:
+ *         page:
+ *           type: integer
+ *           example: 1
+ *         limit:
+ *           type: integer
+ *           example: 10
+ *         totalItems:
+ *           type: integer
+ *           description: Number of records that match the query (not just this page)
+ *           example: 14
+ *         totalPages:
+ *           type: integer
+ *           example: 2
+ *         hasNextPage:
+ *           type: boolean
+ *           example: true
+ *         hasPreviousPage:
+ *           type: boolean
+ *           example: false
+ *     ValidationError:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *           example: Invalid query parameters
+ *         errors:
+ *           type: array
+ *           items:
+ *             type: object
+ *             properties:
+ *               field:
+ *                 type: string
+ *               message:
+ *                 type: string
+ *   parameters:
+ *     PageParam:
+ *       in: query
+ *       name: page
+ *       description: Page number to return (starts at 1)
+ *       schema:
+ *         type: integer
+ *         minimum: 1
+ *         default: 1
+ *     LimitParam:
+ *       in: query
+ *       name: limit
+ *       description: Number of records per page (maximum 50)
+ *       schema:
+ *         type: integer
+ *         minimum: 1
+ *         maximum: 50
+ *         default: 10
+ *     OrderParam:
+ *       in: query
+ *       name: order
+ *       description: Sort direction
+ *       schema:
+ *         type: string
+ *         enum: [asc, desc]
+ *         default: asc
  *   responses:
  *     ServerError:
  *       description: Unexpected server or database error
@@ -127,18 +191,56 @@ router.get('/api/trains', trainsApi);
  * @openapi
  * /api/trips:
  *   get:
- *     summary: Get all trips
+ *     summary: Get a page of trips
+ *     description: Returns trips 10 at a time by default, sorted by name, with pagination metadata.
  *     tags:
  *       - Trips
+ *     parameters:
+ *       - $ref: '#/components/parameters/PageParam'
+ *       - $ref: '#/components/parameters/LimitParam'
+ *       - in: query
+ *         name: sort
+ *         description: Field to sort by
+ *         schema:
+ *           type: string
+ *           enum: [name, region, bestSeason, distance]
+ *           default: name
+ *       - $ref: '#/components/parameters/OrderParam'
  *     responses:
  *       200:
- *         description: Trips returned successfully
+ *         description: One page of trips. A page past the last one returns an empty data array.
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Trip'
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Trip'
+ *                 pagination:
+ *                   $ref: '#/components/schemas/Pagination'
+ *                 query:
+ *                   type: object
+ *                   description: The sort that was applied
+ *                   properties:
+ *                     sort:
+ *                       type: string
+ *                       example: name
+ *                     order:
+ *                       type: string
+ *                       example: asc
+ *       400:
+ *         description: Invalid page, limit, sort or order
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ValidationError'
+ *             example:
+ *               message: Invalid query parameters
+ *               errors:
+ *                 - field: limit
+ *                   message: limit must be a whole number between 1 and 50.
  *       500:
  *         $ref: '#/components/responses/ServerError'
  */

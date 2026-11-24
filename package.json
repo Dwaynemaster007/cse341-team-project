@@ -20,7 +20,8 @@
 		"lint": "eslint .",
 		"lint:fix": "eslint . --fix",
 		"db:roles": "node --env-file=.env src/db/seed-roles.js",
-		"db:make-admin": "node --env-file=.env src/db/make-admin.js"
+		"db:make-admin": "node --env-file=.env src/db/make-admin.js",
+		"db:trips": "node --env-file=.env src/db/seed-trips.js"
 	},
 	"type": "module",
 	"version": "1.0.0",

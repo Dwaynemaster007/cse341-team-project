@@ -160,5 +160,190 @@
             12
         ],
         "imageUrl": "/images/routes/romantic-gorge.png"
+    },
+    {
+        "id": "kurobe-valley-connector",
+        "name": "Kurobe Valley Connector",
+        "description": "A relaxed coastal run from Toyama Bay to the hot-spring town at the mouth of the Kurobe Gorge.",
+        "region": "central",
+        "startStation": "toyama",
+        "endStation": "unazuki",
+        "duration": "1 hour",
+        "distance": 53,
+        "highlights": [
+            "Toyama Bay coastline",
+            "Unazuki hot springs",
+            "Kurobe River delta"
+        ],
+        "bestSeason": "summer",
+        "operatingMonths": [
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+        ],
+        "imageUrl": "/images/routes/gorge-explorer.png"
+    },
+    {
+        "id": "hida-snow-express",
+        "name": "Hida Snow Express",
+        "description": "Winter journey from Nagoya into the snowy northern Alps, passing frozen rivers and thatched-roof villages.",
+        "region": "central",
+        "startStation": "nagoya",
+        "endStation": "unazuki",
+        "duration": "5 hours",
+        "distance": 260,
+        "highlights": [
+            "Snow-covered Hida valley",
+            "Thatched-roof farmhouses",
+            "Frozen river views"
+        ],
+        "bestSeason": "winter",
+        "operatingMonths": [
+            12,
+            1,
+            2,
+            3
+        ],
+        "imageUrl": "/images/routes/alpine-panorama.png"
+    },
+    {
+        "id": "snow-country-limited",
+        "name": "Snow Country Limited",
+        "description": "Cross the deep snow fields of the Tohoku region between Akita and Aomori, with warm sake served on board.",
+        "region": "northern",
+        "startStation": "akita",
+        "endStation": "aomori",
+        "duration": "3 hours",
+        "distance": 185,
+        "highlights": [
+            "Deep snow fields",
+            "Lake Towada outlook",
+            "Local sake tasting"
+        ],
+        "bestSeason": "winter",
+        "operatingMonths": [
+            12,
+            1,
+            2
+        ],
+        "imageUrl": "/images/routes/winter-wetlands.png"
+    },
+    {
+        "id": "tsugaru-apple-line",
+        "name": "Tsugaru Apple Line",
+        "description": "Autumn harvest ride through Aomori apple orchards toward the rice fields of Akita.",
+        "region": "northern",
+        "startStation": "aomori",
+        "endStation": "akita",
+        "duration": "3.5 hours",
+        "distance": 185,
+        "highlights": [
+            "Apple orchards in harvest",
+            "Mount Iwaki views",
+            "Golden rice terraces"
+        ],
+        "bestSeason": "autumn",
+        "operatingMonths": [
+            9,
+            10,
+            11
+        ],
+        "imageUrl": "/images/routes/coastal-breeze.png"
+    },
+    {
+        "id": "kushiro-marshland-dawn",
+        "name": "Kushiro Marshland Dawn",
+        "description": "Early-morning summer train across the Kushiro wetlands, home to red-crowned cranes and wild deer.",
+        "region": "hokkaido",
+        "startStation": "shibecha",
+        "endStation": "kushiro",
+        "duration": "1.5 hours",
+        "distance": 31,
+        "highlights": [
+            "Red-crowned cranes",
+            "Sunrise over the marsh",
+            "Wild deer sightings"
+        ],
+        "bestSeason": "summer",
+        "operatingMonths": [
+            6,
+            7,
+            8,
+            9
+        ],
+        "imageUrl": "/images/routes/winter-wetlands.png"
+    },
+    {
+        "id": "kishu-coast-limited",
+        "name": "Kishu Coast Limited",
+        "description": "Summer seaside route from Wakayama along the Kii Peninsula coastline into central Osaka.",
+        "region": "kansai",
+        "startStation": "wakayama",
+        "endStation": "osaka",
+        "duration": "1.5 hours",
+        "distance": 63,
+        "highlights": [
+            "Pacific coastline",
+            "Wakayama Castle",
+            "Fresh seafood stops"
+        ],
+        "bestSeason": "summer",
+        "operatingMonths": [
+            5,
+            6,
+            7,
+            8,
+            9
+        ],
+        "imageUrl": "/images/routes/sakura-valley.png"
+    },
+    {
+        "id": "arashiyama-bamboo-shuttle",
+        "name": "Arashiyama Bamboo Shuttle",
+        "description": "Spring shuttle from Osaka to the famous bamboo groves and temples of Arashiyama.",
+        "region": "kansai",
+        "startStation": "osaka",
+        "endStation": "arashiyama",
+        "duration": "1 hour",
+        "distance": 55,
+        "highlights": [
+            "Bamboo grove walk",
+            "Togetsukyo Bridge",
+            "Cherry blossoms"
+        ],
+        "bestSeason": "spring",
+        "operatingMonths": [
+            3,
+            4,
+            5
+        ],
+        "imageUrl": "/images/routes/romantic-gorge.png"
+    },
+    {
+        "id": "hozu-river-twilight",
+        "name": "Hozu River Twilight",
+        "description": "Evening ride above the Hozu River gorge with lantern-lit stations and summer fireflies.",
+        "region": "kansai",
+        "startStation": "kameoka",
+        "endStation": "arashiyama",
+        "duration": "0.5 hours",
+        "distance": 7,
+        "highlights": [
+            "Hozu River gorge",
+            "Lantern-lit stations",
+            "Summer fireflies"
+        ],
+        "bestSeason": "summer",
+        "operatingMonths": [
+            6,
+            7,
+            8
+        ],
+        "imageUrl": "/images/routes/romantic-gorge.png"
     }
 ]

@@ -302,3 +302,30 @@
         }
     }
 }
+
+/* W05 FS1: result summary and pagination controls for the trip list */
+.trips-summary {
+    color: var(--clr-text-secondary);
+    font-size: var(--font-size-sm);
+    margin-block: var(--space-md);
+    scroll-margin-top: var(--space-xl);
+}
+
+.trips-pagination {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-md);
+    margin-block: var(--space-xl);
+
+    &[hidden] {
+        display: none;
+    }
+}
+
+.trips-page-status {
+    font-weight: 600;
+    min-width: 9ch;
+    text-align: center;
+}
