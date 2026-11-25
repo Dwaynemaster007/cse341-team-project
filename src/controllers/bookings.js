@@ -15,7 +15,7 @@ export async function getBookingById(req, res) {
 
         if (!booking) {
             return res.status(404).json({
-                error: "Booking not found",
+                message: "Booking not found",
             });
         }
 
@@ -24,7 +24,7 @@ export async function getBookingById(req, res) {
         console.error("Error fetching booking:", error);
 
         return res.status(500).json({
-            error: "Failed to fetch booking",
+            message: "Failed to fetch booking",
         });
     }
 }
@@ -38,7 +38,7 @@ export async function getAllBookings(req, res) {
         console.error("Failed to retrieve bookings:", error);
 
         return res.status(500).json({
-            error: "Failed to fetch bookings",
+            message: "Failed to fetch bookings",
         });
     }
 }
@@ -59,20 +59,10 @@ const bookingPage = async (req, res) => {
     const trip = await db.collection('trips').findOne({
         id: schedule.tripId
     });
-    const ticketClasses = await db.collection('ticketClasses').find({}).toArray();
-
-    const ticketOptions = ticketClasses.map((ticketClass) => ({
-        class: ticketClass.class,
-        name: ticketClass.name,
-        price: trip.distance * ticketClass.pricePerKm,
-        amenities: ticketClass.amenities,
-        description: ticketClass.description
-    }));
 
     res.render('trips/book', {
         title: 'Book Trip',
         schedule,
-        ticketOptions,
         distance: trip.distance
     });
 };
@@ -92,7 +82,7 @@ const processBookingRequest = async (req, res) => {
         console.error("Error creating booking:", error);
 
         return res.status(500).json({
-            error: "Failed to create booking"
+            message: "Failed to create booking"
         });
     }
 };

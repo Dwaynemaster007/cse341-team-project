@@ -23,7 +23,7 @@ export async function getAllTicketClasses(req, res) {
     console.error("Failed to retrieve ticket classes:", error);
 
     return res.status(500).json({
-      error: "Failed to fetch ticket classes",
+      message: "Failed to fetch ticket classes",
     });
   }
 }
@@ -34,7 +34,7 @@ export async function getTicketClassesForDay(req, res) {
 
     if (!day || !validDays.includes(day)) {
       return res.status(400).json({
-        error: "A valid weekday is required.",
+        message: "A valid weekday is required.",
         validDays,
       });
     }
@@ -46,7 +46,7 @@ export async function getTicketClassesForDay(req, res) {
     console.error("Failed to retrieve ticket classes for day:", error);
 
     return res.status(500).json({
-      error: "Failed to fetch ticket classes",
+      message: "Failed to fetch ticket classes",
     });
   }
 }

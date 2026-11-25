@@ -1,3 +1,4 @@
+
 import { Router } from 'express';
 import { trainsApi } from './trains.js';
 import { getAllBookings as bookingsApi } from '../controllers/bookings.js';
@@ -22,6 +23,36 @@ const router = Router();
  *       type: object
  *       properties:
  *         message:
+ *           type: string
+ *     TicketClass:
+ *       type: object
+ *       properties:
+ *         class:
+ *           type: string
+ *           example: standard
+ *         name:
+ *           type: string
+ *           example: Standard Class
+ *         pricePerKm:
+ *           type: number
+ *           example: 80
+ *         availableDays:
+ *           type: array
+ *           items:
+ *             type: string
+ *             enum:
+ *               - monday
+ *               - tuesday
+ *               - wednesday
+ *               - thursday
+ *               - friday
+ *               - saturday
+ *               - sunday
+ *         amenities:
+ *           type: array
+ *           items:
+ *             type: string
+ *         description:
  *           type: string
  *   responses:
  *     ServerError:
@@ -74,6 +105,7 @@ router.get('/api/trains', trainsApi);
 // ===== FS2: Schedules API =====
 
 // ===== FS3: Bookings API =====
+
 /**
  * @openapi
  * /api/bookings:
@@ -107,15 +139,14 @@ router.get('/api/trains', trainsApi);
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
+ *               $ref: '#/components/schemas/Message'
  *             example:
- *               error: Failed to fetch bookings
+ *               message: Failed to fetch bookings
  */
 router.get('/api/bookings', bookingsApi);
+
 // ===== FS4: Ticket Classes API =====
+
 /**
  * @openapi
  * /api/ticket-classes:
@@ -146,7 +177,7 @@ router.get('/api/bookings', bookingsApi);
  *             schema:
  *               type: array
  *               items:
- *                 type: object
+ *                 $ref: '#/components/schemas/TicketClass'
  *             example:
  *               - class: standard
  *                 name: Standard Class
@@ -162,21 +193,14 @@ router.get('/api/bookings', bookingsApi);
  *             schema:
  *               type: object
  *               properties:
- *                 error:
+ *                 message:
  *                   type: string
  *                 validDays:
  *                   type: array
  *                   items:
  *                     type: string
  *       500:
- *         description: Failed to retrieve ticket classes
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
+ *         $ref: '#/components/responses/ServerError'
  */
 router.get('/api/ticket-classes', (req, res) => {
   if (req.query.day !== undefined) {

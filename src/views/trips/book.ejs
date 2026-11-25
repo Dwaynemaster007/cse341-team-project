@@ -1,3 +1,4 @@
+
 <%- include('../partials/header') %>
 <article class="booking-page">
     <div class="route-header">
@@ -13,7 +14,7 @@
 
         <section class="ticket-selection">
             <h2 class="section-title">Select Your Ticket</h2>
-            
+
             <div class="ticket-options" data-distance="<%= distance %>"></div>
             <p id="ticketLoading" role="status">Loading available ticket classes...</p>
             <p id="ticketError" role="alert" aria-live="polite"></p>
@@ -21,22 +22,22 @@
 
         <section class="day-selection">
             <h2 class="section-title">Select The Day</h2>
-            
+
             <div class="schedule-info">
                 <div class="time-display">
                     <span class="departure-time"><%= schedule.departureTime %></span>
                     <span class="time-separator">→</span>
-                    <span class="arrival-time"><%=schedule.arrivalTime %></span>
+                    <span class="arrival-time"><%= schedule.arrivalTime %></span>
                 </div>
                 <div class="days-display">
                     <% if (schedule && schedule.daysOfWeek) { %>
                         <% schedule.daysOfWeek.forEach((day, index) => { %>
-                            <label class="day-pill<%= index === 0 ? ' selected' : '' %>" for="day-<%=index %>">
+                            <label class="day-pill<%= index === 0 ? ' selected' : '' %>" for="day-<%= index %>">
                                 <input
                                     type="radio"
                                     name="selectedDay"
                                     id="day-<%= index %>"
-                                    value="<%= day%>"
+                                    value="<%= day %>"
                                     <%= index === 0 ? 'checked' : '' %>
                                     required
                                 >
@@ -63,15 +64,15 @@
                     <div class="passenger-card-header">
                         <h3 class="passenger-number">Passenger 1</h3>
                     </div>
-                    
+
                     <div class="form-grid">
                         <div class="form-group">
                             <label for="firstName-0" class="form-label">First Name</label>
-                            <input 
-                                type="text" 
-                                id="firstName-0" 
-                                name="passengers[0][firstName]" 
-                                class="form-input" 
+                            <input
+                                type="text"
+                                id="firstName-0"
+                                name="passengers[0][firstName]"
+                                class="form-input"
                                 required
                                 placeholder="Enter first name"
                             >
@@ -79,11 +80,11 @@
 
                         <div class="form-group">
                             <label for="lastName-0" class="form-label">Last Name</label>
-                            <input 
-                                type="text" 
-                                id="lastName-0" 
-                                name="passengers[0][lastName]" 
-                                class="form-input" 
+                            <input
+                                type="text"
+                                id="lastName-0"
+                                name="passengers[0][lastName]"
+                                class="form-input"
                                 required
                                 placeholder="Enter last name"
                             >
@@ -91,11 +92,11 @@
 
                         <div class="form-group">
                             <label for="email-0" class="form-label">Email Address</label>
-                            <input 
-                                type="email" 
-                                id="email-0" 
-                                name="passengers[0][email]" 
-                                class="form-input" 
+                            <input
+                                type="email"
+                                id="email-0"
+                                name="passengers[0][email]"
+                                class="form-input"
                                 required
                                 placeholder="your.email@example.com"
                             >
@@ -103,11 +104,11 @@
 
                         <div class="form-group">
                             <label for="phone-0" class="form-label">Phone Number</label>
-                            <input 
-                                type="tel" 
-                                id="phone-0" 
-                                name="passengers[0][phone]" 
-                                class="form-input" 
+                            <input
+                                type="tel"
+                                id="phone-0"
+                                name="passengers[0][phone]"
+                                class="form-input"
                                 required
                                 placeholder="+81 90-1234-5678"
                             >
@@ -162,7 +163,7 @@
     const ticketError = document.getElementById('ticketError');
     const bookingForm = document.querySelector('.booking-form');
     const tripDistance = Number(ticketOptionsContainer.dataset.distance);
-    
+
     // Update summary displays
     const selectedTicketName = document.getElementById('selectedTicketName');
     const passengerCountDisplay = document.getElementById('passengerCount');
@@ -206,15 +207,15 @@
             <div class="passenger-card-header">
                 <h3 class="passenger-number">Passenger ${passengerCount + 1}</h3>
             </div>
-            
+
             <div class="form-grid">
                 <div class="form-group">
                     <label for="firstName-${passengerCount}" class="form-label">First Name</label>
-                    <input 
-                        type="text" 
-                        id="firstName-${passengerCount}" 
-                        name="passengers[${passengerCount}][firstName]" 
-                        class="form-input" 
+                    <input
+                        type="text"
+                        id="firstName-${passengerCount}"
+                        name="passengers[${passengerCount}][firstName]"
+                        class="form-input"
                         required
                         placeholder="Enter first name"
                     >
@@ -222,11 +223,11 @@
 
                 <div class="form-group">
                     <label for="lastName-${passengerCount}" class="form-label">Last Name</label>
-                    <input 
-                        type="text" 
-                        id="lastName-${passengerCount}" 
-                        name="passengers[${passengerCount}][lastName]" 
-                        class="form-input" 
+                    <input
+                        type="text"
+                        id="lastName-${passengerCount}"
+                        name="passengers[${passengerCount}][lastName]"
+                        class="form-input"
                         required
                         placeholder="Enter last name"
                     >
@@ -234,11 +235,11 @@
 
                 <div class="form-group">
                     <label for="email-${passengerCount}" class="form-label">Email Address</label>
-                    <input 
-                        type="email" 
-                        id="email-${passengerCount}" 
-                        name="passengers[${passengerCount}][email]" 
-                        class="form-input" 
+                    <input
+                        type="email"
+                        id="email-${passengerCount}"
+                        name="passengers[${passengerCount}][email]"
+                        class="form-input"
                         required
                         placeholder="your.email@example.com"
                     >
@@ -246,11 +247,11 @@
 
                 <div class="form-group">
                     <label for="phone-${passengerCount}" class="form-label">Phone Number</label>
-                    <input 
-                        type="tel" 
-                        id="phone-${passengerCount}" 
-                        name="passengers[${passengerCount}][phone]" 
-                        class="form-input" 
+                    <input
+                        type="tel"
+                        id="phone-${passengerCount}"
+                        name="passengers[${passengerCount}][phone]"
+                        class="form-input"
                         required
                         placeholder="+81 90-1234-5678"
                     >
@@ -277,7 +278,7 @@
 
         card.remove();
         passengerCount--;
-        
+
         updatePassengerNumbers();
         updateSummary();
         updateAddButtonState();
@@ -297,7 +298,7 @@
     const addRemoveAllButtons = () => {
         const firstCard = document.querySelector('.passenger-card');
         const existingBtn = firstCard.querySelector('.btn-remove-passenger');
-        
+
         if (passengerCount > 1 && !existingBtn) {
             const removeBtn = createRemoveButton();
             firstCard.querySelector('.passenger-card-header').appendChild(removeBtn);
@@ -309,32 +310,32 @@
     const autoFillForm = () => {
         const westernFirstNames = ['James', 'Olivia', 'William', 'Emily', 'Charlotte', 'George', 'Anna', 'Henry'];
         const westernLastNames = ['Smith', 'Johnson', 'Brown', 'Taylor', 'Wilson', 'Evans', 'Clark', 'Davis'];
-        
+
         const japaneseFirstNames = ['Yuki', 'Haruto', 'Sakura', 'Akira', 'Hana', 'Kenji', 'Aoi', 'Takeshi'];
         const japaneseLastNames = ['Tanaka', 'Suzuki', 'Yamamoto', 'Watanabe', 'Ito', 'Nakamura', 'Kobayashi', 'Sato'];
-        
+
         const randomItem = (arr) => arr[Math.floor(Math.random() * arr.length)];
         const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
-        
+
         const cards = document.querySelectorAll('.passenger-card');
-        
+
         cards.forEach((card, index) => {
             const i = card.dataset.passengerIndex ? Number(card.dataset.passengerIndex) : index;
-            
+
             // 30% chance for Japanese name
             const isJapanese = Math.random() < 0.30;
             const firstName = randomItem(isJapanese ? japaneseFirstNames : westernFirstNames);
-            const lastName = randomItem(isJapanese? japaneseLastNames : westernLastNames);
-            
+            const lastName = randomItem(isJapanese ? japaneseLastNames : westernLastNames);
+
             const firstNameInput = card.querySelector(`#firstName-${i}`);
             const lastNameInput = card.querySelector(`#lastName-${i}`);
             const emailInput = card.querySelector(`#email-${i}`);
             const phoneInput = card.querySelector(`#phone-${i}`);
-            
+
             if (firstNameInput) firstNameInput.value = firstName;
-            if (lastNameInput) lastNameInput.value= lastName;
+            if (lastNameInput) lastNameInput.value = lastName;
             if (emailInput) {
-                emailInput.value = `${firstName.toLowerCase()}.${lastName.toLowerCase()}${randInt(10,99)}@example.com`;
+                emailInput.value = `${firstName.toLowerCase()}.${lastName.toLowerCase()}${randInt(10, 99)}@example.com`;
             }
             if (phoneInput) {
                 if (isJapanese) {
@@ -349,7 +350,7 @@
                 }
             }
         });
-        
+
         console.log(`✓ Filled ${cards.length} passenger form(s)`);
     };
 
@@ -372,7 +373,9 @@
             ticketClasses.forEach((ticket) => {
                 const isAvailable = Array.isArray(ticket.availableDays) &&
                     ticket.availableDays.includes(day.toLowerCase());
+
                 const price = tripDistance * Number(ticket.pricePerKm);
+
                 const label = document.createElement('label');
                 label.className = isAvailable ? 'ticket-card' : 'ticket-card unavailable';
 
@@ -385,39 +388,68 @@
                 radio.required = true;
                 radio.disabled = !isAvailable;
                 radio.checked = isAvailable && !hasSelectedClass;
+
                 if (radio.checked) hasSelectedClass = true;
+
+                const content = document.createElement('div');
+                content.className = 'ticket-content';
 
                 const header = document.createElement('div');
                 header.className = 'ticket-header';
-                const name = document.createElement('span');
+
+                const name = document.createElement('h3');
                 name.className = 'ticket-name';
                 name.textContent = ticket.name;
-                const priceDisplay = document.createElement('span');
+
+                const priceDisplay = document.createElement('div');
                 priceDisplay.className = 'ticket-price';
-                priceDisplay.textContent = `¥${price.toLocaleString()}`;
+
+                const priceSymbol = document.createElement('span');
+                priceSymbol.className = 'price-symbol';
+                priceSymbol.textContent = '¥';
+
+                const priceAmount = document.createElement('span');
+                priceAmount.className = 'price-amount';
+                priceAmount.textContent = price.toLocaleString();
+
+                priceDisplay.append(priceSymbol, priceAmount);
 
                 const description = document.createElement('p');
                 description.className = 'ticket-description';
                 description.textContent = isAvailable
                     ? ticket.description
                     : `${ticket.description} (Not available on ${day})`;
+
                 const amenities = document.createElement('ul');
                 amenities.className = 'amenities-list';
+
                 (ticket.amenities || []).forEach((amenity) => {
                     const item = document.createElement('li');
                     item.className = 'amenity-item';
-                    item.textContent = amenity;
+
+                    const icon = document.createElement('span');
+                    icon.className = 'amenity-icon';
+                    icon.textContent = '\u2713';
+
+                    const text = document.createElement('span');
+                    text.className = 'amenity-text';
+                    text.textContent = amenity;
+
+                    item.append(icon, text);
                     amenities.appendChild(item);
                 });
 
                 header.append(name, priceDisplay);
-                label.append(radio, header, description, amenities);
+                content.append(header, description, amenities);
+
+                label.append(radio, content);
                 ticketOptionsContainer.appendChild(label);
             });
 
             const firstRadio = ticketOptionsContainer.querySelector(
                 'input[name="ticketClass"]:checked'
             );
+
             if (firstRadio) {
                 ticketPrice = Number(firstRadio.dataset.price);
                 selectedTicketName.textContent = firstRadio.dataset.name;
@@ -494,7 +526,6 @@
     if (initialDay) {
         loadTicketClasses(initialDay.value);
     }
-
 </script>
 
 <%- include('../partials/footer') %>

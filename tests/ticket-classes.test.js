@@ -45,6 +45,9 @@ describe('GET /api/ticket-classes', () => {
     );
 
     expect(response.status).toBe(400);
-    expect(response.body).toHaveProperty('error');
+    expect(response.body).toHaveProperty('message');
+    expect(response.body).toHaveProperty('validDays');
+    expect(response.body.validDays).toContain('monday');
+    expect(response.body.validDays).toContain('sunday');
   });
 });
