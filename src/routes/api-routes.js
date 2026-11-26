@@ -1,6 +1,10 @@
 
 import { Router } from 'express';
 import { trainsApi } from './trains.js';
+import {
+    getAllStations,
+    getStationById,
+} from '../controllers/stations.js';
 import { getAllTrips, getTripById } from '../controllers/trips.js';
 import { getAllBookings as bookingsApi } from '../controllers/bookings.js';
 import {
@@ -323,5 +327,42 @@ router.get('/api/ticket-classes', (req, res) => {
 });
 
 // ===== FS5: Stations API =====
+/**
+ * @openapi
+ * /api/stations:
+ *   get:
+ *     summary: Get all stations
+ *     tags:
+ *       - Stations
+ *     responses:
+ *       200:
+ *         description: Stations returned successfully
+ *       500:
+ *         $ref: '#/components/responses/ServerError'
+ */
+router.get("/api/stations", getAllStations);
+
+/**
+ * @openapi
+ * /api/stations/{id}:
+ *   get:
+ *     summary: Get a station by ID
+ *     tags:
+ *       - Stations
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Station returned successfully
+ *       404:
+ *         description: Station not found
+ *       500:
+ *         $ref: '#/components/responses/ServerError'
+ */
+router.get("/api/stations/:id", getStationById);
 
 export default router;
