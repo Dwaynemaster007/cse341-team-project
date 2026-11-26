@@ -1,3 +1,4 @@
+
 article.booking-page {
     max-width: var(--content-max-width);
     margin: 0 auto;
@@ -51,6 +52,17 @@ article.booking-page {
                     border-radius: var(--radius-lg);
                     padding: calc(var(--space-sm) / 2);
                     transition: all 0.2s ease;
+
+                    &.unavailable {
+                        opacity: 0.5;
+                        cursor: not-allowed;
+                        filter: grayscale(1);
+
+                        &:hover {
+                            border-color: var(--clr-border);
+                            box-shadow: none;
+                        }
+                    }
 
                     &:hover {
                         border-color: var(--clr-primary-light);
@@ -462,7 +474,6 @@ article.booking-page {
         }
 
         .booking-form {
-
             input[type='text'], input[type='email'], input[type='tel'] {
                 width: 225px;
             }
@@ -527,7 +538,6 @@ article.booking-page {
 
     @media (min-width: 1024px) {
         .booking-form {
-
             input[type='text'], input[type='email'], input[type='tel'] {
                 width: 230px;
             }

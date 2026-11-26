@@ -1,7 +1,12 @@
+
 import { Router } from 'express';
 import { trainsApi } from './trains.js';
 import { getAllTrips, getTripById } from '../controllers/trips.js';
 import { getAllBookings as bookingsApi } from '../controllers/bookings.js';
+import {
+  getAllTicketClasses,
+  getTicketClassesForDay,
+} from '../controllers/ticket-classes.js';
 
 /**
  * Routes that expose JSON API endpoints.
@@ -19,6 +24,36 @@ const router = Router();
  *       type: object
  *       properties:
  *         message:
+ *           type: string
+ *     TicketClass:
+ *       type: object
+ *       properties:
+ *         class:
+ *           type: string
+ *           example: standard
+ *         name:
+ *           type: string
+ *           example: Standard Class
+ *         pricePerKm:
+ *           type: number
+ *           example: 80
+ *         availableDays:
+ *           type: array
+ *           items:
+ *             type: string
+ *             enum:
+ *               - monday
+ *               - tuesday
+ *               - wednesday
+ *               - thursday
+ *               - friday
+ *               - saturday
+ *               - sunday
+ *         amenities:
+ *           type: array
+ *           items:
+ *             type: string
+ *         description:
  *           type: string
  *   responses:
  *     ServerError:
@@ -182,6 +217,7 @@ router.get('/api/trips/:id', getTripById);
 // ===== FS2: Schedules API =====
 
 // ===== FS3: Bookings API =====
+
 /**
  * @openapi
  * /api/bookings:
@@ -215,15 +251,76 @@ router.get('/api/trips/:id', getTripById);
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
+ *               $ref: '#/components/schemas/Message'
  *             example:
- *               error: Failed to fetch bookings
+ *               message: Failed to fetch bookings
  */
 router.get('/api/bookings', bookingsApi);
+
 // ===== FS4: Ticket Classes API =====
+
+/**
+ * @openapi
+ * /api/ticket-classes:
+ *   get:
+ *     summary: Get all ticket classes or filter by available weekday
+ *     tags:
+ *       - Ticket Classes
+ *     parameters:
+ *       - in: query
+ *         name: day
+ *         required: false
+ *         schema:
+ *           type: string
+ *           enum:
+ *             - monday
+ *             - tuesday
+ *             - wednesday
+ *             - thursday
+ *             - friday
+ *             - saturday
+ *             - sunday
+ *         description: Filter ticket classes by available weekday
+ *     responses:
+ *       200:
+ *         description: Ticket classes returned successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/TicketClass'
+ *             example:
+ *               - class: standard
+ *                 name: Standard Class
+ *                 pricePerKm: 80
+ *                 availableDays:
+ *                   - monday
+ *                   - tuesday
+ *                   - wednesday
+ *       400:
+ *         description: Invalid or missing weekday when filtering
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 validDays:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *       500:
+ *         $ref: '#/components/responses/ServerError'
+ */
+router.get('/api/ticket-classes', (req, res) => {
+  if (req.query.day !== undefined) {
+    return getTicketClassesForDay(req, res);
+  }
+
+  return getAllTicketClasses(req, res);
+});
 
 // ===== FS5: Stations API =====
 

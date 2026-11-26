@@ -1,3 +1,4 @@
+
 //src/controllers/trains.js
 import {
   getTrainById as findTrainById,
@@ -12,7 +13,7 @@ export async function getTrainById(req, res) {
 
     if (!train) {
       return res.status(404).json({
-        error: "Train not found",
+        message: "Train not found",
       });
     }
 
@@ -21,7 +22,7 @@ export async function getTrainById(req, res) {
     console.error("Error fetching train:", error);
 
     return res.status(500).json({
-      error: "Failed to fetch train",
+      message: "Failed to fetch train",
     });
   }
 }
@@ -35,7 +36,7 @@ export async function getAllTrains(req, res) {
     console.error("Error fetching trains:", error);
 
     return res.status(500).json({
-      error: "Failed to fetch trains",
+      message: "Failed to fetch trains",
     });
   }
 }
