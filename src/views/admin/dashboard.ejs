@@ -4,7 +4,11 @@
     <p>Signed in as <strong><%= user.displayName %></strong> (<%= user.email %>).</p>
 
     <%# FS3, FS4 and FS5 add links to their admin pages in this list. %>
-    <ul class="admin-links"></ul>
+    <ul class="admin-links">
+        <li>
+            <a href="/admin/trips">Manage Trips</a>
+        </li>
+    </ul>
 
     <form method="POST" action="/logout">
         <button type="submit">Sign out</button>

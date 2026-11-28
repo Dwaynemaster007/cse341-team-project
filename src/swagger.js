@@ -22,7 +22,17 @@ const swaggerSpec = swaggerJsdoc({
         url: '/',
         description: 'Current server'
       }
-    ]
+    ],
+    components: {
+      securitySchemes: {
+        sessionCookie: {
+          type: 'apiKey',
+          in: 'cookie',
+          name: 'connect.sid',
+          description: 'Session cookie used to authenticate users'
+        }
+      }
+    }
   },
   apis: [Path.join(__dirname, 'routes', 'api-routes.js')]
 });
