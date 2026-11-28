@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import { trainsApi } from './trains.js';
-import { getAllTrips, getTripById } from '../controllers/trips.js';
+import { getAllTrips, getTripById, updateTrip, deleteTrip } from '../controllers/trips.js';
 import { getAllBookings as bookingsApi } from '../controllers/bookings.js';
+import { requireApiRole } from '../middleware/auth.js';
 
 /**
  * Routes that expose JSON API endpoints.
@@ -178,6 +179,74 @@ router.get('/api/trips', getAllTrips);
  *         $ref: '#/components/responses/ServerError'
  */
 router.get('/api/trips/:id', getTripById);
+
+/**
+ * @openapi
+ * /api/trips/{id}:
+ *   put:
+ *     summary: Update a trip
+ *     tags:
+ *       - Trips
+ *     security:
+ *       - sessionCookie: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Trip'
+ *     responses:
+ *       200:
+ *         description: Trip updated successfully
+ *       400:
+ *         description: Invalid trip data or schedule selection
+ *       401:
+ *         description: Authentication required
+ *       403:
+ *         description: Admin role required
+ *       404:
+ *         description: Trip not found
+ *       500:
+ *         $ref: '#/components/responses/ServerError'
+ */
+router.put('/api/trips/:id', requireApiRole('admin'), updateTrip);
+
+/**
+ * @openapi
+ * /api/trips/{id}:
+ *   delete:
+ *     summary: Delete a trip
+ *     tags:
+ *       - Trips
+ *     security:
+ *       - sessionCookie: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Trip deleted successfully
+ *       401:
+ *         description: Authentication required
+ *       403:
+ *         description: Admin role required
+ *       404:
+ *         description: Trip not found
+ *       409:
+ *         description: Trip has associated schedules or bookings
+ *       500:
+ *         $ref: '#/components/responses/ServerError'
+ */
+router.delete('/api/trips/:id', requireApiRole('admin'), deleteTrip);
 
 // ===== FS2: Schedules API =====
 

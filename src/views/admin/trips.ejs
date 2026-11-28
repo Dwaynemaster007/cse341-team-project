@@ -1,0 +1,26 @@
+<%- include('../partials/header') %>
+
+<section class="admin-trips">
+    <header class="admin-trips__header">
+        <h1>Manage Trips</h1>
+        <p>View, update, and delete the trips available on Kizuna Rail.</p>
+    </header>
+
+    <div id="trips-message" class="trips-message" role="status" aria-live="polite"></div>
+
+    <div id="trips-admin-list" class="trips-admin-list">
+        <p>Loading trips...</p>
+    </div>
+</section>
+
+<script id="admin-reference-data" type="application/json">
+    <%- JSON.stringify({
+        stations,
+        schedules,
+        bookedScheduleIds
+    }).replace(/</g, '\\u003c') %>
+</script>
+
+<script src="/js/trip-admin.js" defer></script>
+
+<%- include('../partials/footer') %>

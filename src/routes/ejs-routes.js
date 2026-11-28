@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { homePage, aboutPage, testErrorPage } from './index.js';
 import { trainsPage } from './trains.js';
-import { listTripsPage, tripDetailsPage } from '../controllers/trips.js';
+import { listTripsPage, tripDetailsPage, tripsAdminPage } from '../controllers/trips.js';
 
 import {
   bookingPage,
@@ -58,5 +58,6 @@ router.post('/logout', logout);
 
 // ===== Admin pages (admin role required) =====
 router.get('/admin', requirePageRole('admin'), adminDashboardPage);
+router.get('/admin/trips', requirePageRole('admin'), tripsAdminPage);
 
 export default router;
