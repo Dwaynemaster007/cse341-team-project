@@ -1,3 +1,4 @@
+
 <%- include('../partials/header') %>
 <article class="booking-page">
     <div class="route-header">
@@ -13,52 +14,15 @@
 
         <section class="ticket-selection">
             <h2 class="section-title">Select Your Ticket</h2>
-            
-            <div class="ticket-options">
-                <% if (ticketOptions) { %>
-                    <% ticketOptions.forEach((ticket, index) => { %>
-                        <label class="ticket-card" for="ticket-<%= ticket.class %>">
-                            <input 
-                                type="radio" 
-                                name="ticketClass" 
-                                id="ticket-<%= ticket.class %>" 
-                                value="<%= ticket.class %>"
-                                data-name="<%= ticket.name %>"
-                                data-price="<%= ticket.price %>"
-                                <%= index === 1 ? 'checked' : '' %>
-                                required
-                            >
-                            <div class="ticket-content">
-                                <div class="ticket-header">
-                                    <h3 class="ticket-name"><%= ticket.name %></h3>
-                                    <div class="ticket-price">
-                                        <span class="price-symbol">¥</span>
-                                        <span class="price-amount"><%= Number(ticket.price).toLocaleString() %></span>
-                                    </div>
-                                </div>
-                                
-                                <p class="ticket-description"><%= ticket.description %></p>
-                                
-                                <ul class="amenities-list">
-                                    <% if (ticket.amenities) { %>
-                                        <% ticket.amenities.forEach((amenity) => { %>
-                                            <li class="amenity-item">
-                                                <span class="amenity-icon">✓</span>
-                                                <span class="amenity-text"><%= amenity %></span>
-                                            </li>
-                                        <% }) %>
-                                    <% } %>
-                                </ul>
-                            </div>
-                        </label>
-                    <% }) %>
-                <% } %>
-            </div>
+
+            <div class="ticket-options" data-distance="<%= distance %>"></div>
+            <p id="ticketLoading" role="status">Loading available ticket classes...</p>
+            <p id="ticketError" role="alert" aria-live="polite"></p>
         </section>
 
         <section class="day-selection">
             <h2 class="section-title">Select The Day</h2>
-            
+
             <div class="schedule-info">
                 <div class="time-display">
                     <span class="departure-time"><%= schedule.departureTime %></span>
@@ -100,15 +64,15 @@
                     <div class="passenger-card-header">
                         <h3 class="passenger-number">Passenger 1</h3>
                     </div>
-                    
+
                     <div class="form-grid">
                         <div class="form-group">
                             <label for="firstName-0" class="form-label">First Name</label>
-                            <input 
-                                type="text" 
-                                id="firstName-0" 
-                                name="passengers[0][firstName]" 
-                                class="form-input" 
+                            <input
+                                type="text"
+                                id="firstName-0"
+                                name="passengers[0][firstName]"
+                                class="form-input"
                                 required
                                 placeholder="Enter first name"
                             >
@@ -116,11 +80,11 @@
 
                         <div class="form-group">
                             <label for="lastName-0" class="form-label">Last Name</label>
-                            <input 
-                                type="text" 
-                                id="lastName-0" 
-                                name="passengers[0][lastName]" 
-                                class="form-input" 
+                            <input
+                                type="text"
+                                id="lastName-0"
+                                name="passengers[0][lastName]"
+                                class="form-input"
                                 required
                                 placeholder="Enter last name"
                             >
@@ -128,11 +92,11 @@
 
                         <div class="form-group">
                             <label for="email-0" class="form-label">Email Address</label>
-                            <input 
-                                type="email" 
-                                id="email-0" 
-                                name="passengers[0][email]" 
-                                class="form-input" 
+                            <input
+                                type="email"
+                                id="email-0"
+                                name="passengers[0][email]"
+                                class="form-input"
                                 required
                                 placeholder="your.email@example.com"
                             >
@@ -140,11 +104,11 @@
 
                         <div class="form-group">
                             <label for="phone-0" class="form-label">Phone Number</label>
-                            <input 
-                                type="tel" 
-                                id="phone-0" 
-                                name="passengers[0][phone]" 
-                                class="form-input" 
+                            <input
+                                type="tel"
+                                id="phone-0"
+                                name="passengers[0][phone]"
+                                class="form-input"
                                 required
                                 placeholder="+81 90-1234-5678"
                             >
@@ -162,7 +126,7 @@
             <div class="summary-content">
                 <div class="summary-row">
                     <span class="summary-label">Selected Ticket:</span>
-                    <span class="summary-value" id="selectedTicketName"><%= ticketOptions && ticketOptions[0] ? ticketOptions[0].name : 'Standard Class' %></span>
+                    <span class="summary-value" id="selectedTicketName">Loading...</span>
                 </div>
                 <div class="summary-row">
                     <span class="summary-label">Number of Passengers:</span>
@@ -170,11 +134,11 @@
                 </div>
                 <div class="summary-row">
                     <span class="summary-label">Price per Ticket:</span>
-                    <span class="summary-value" id="pricePerTicket"><%= ticketOptions && ticketOptions[0] ? '¥' + Number(ticketOptions[0].price).toLocaleString() : '¥14,400' %></span>
+                    <span class="summary-value" id="pricePerTicket">¥0</span>
                 </div>
                 <div class="summary-row total">
                     <span class="summary-label">Total Amount:</span>
-                    <span class="summary-value" id="totalAmount"><%= ticketOptions && ticketOptions[0] ? '¥' + Number(ticketOptions[0].price).toLocaleString() : '¥14,400' %></span>
+                    <span class="summary-value" id="totalAmount">¥0</span>
                 </div>
             </div>
         </section>
@@ -194,8 +158,12 @@
     const selectedDayLabels = document.querySelectorAll('.days-display label');
     const passengersList = document.getElementById('passengersList');
     const addPassengerBtn = document.getElementById('addPassenger');
-    const ticketRadios = document.querySelectorAll('input[name="ticketClass"]');
-    
+    const ticketOptionsContainer = document.querySelector('.ticket-options');
+    const ticketLoading = document.getElementById('ticketLoading');
+    const ticketError = document.getElementById('ticketError');
+    const bookingForm = document.querySelector('.booking-form');
+    const tripDistance = Number(ticketOptionsContainer.dataset.distance);
+
     // Update summary displays
     const selectedTicketName = document.getElementById('selectedTicketName');
     const passengerCountDisplay = document.getElementById('passengerCount');
@@ -239,15 +207,15 @@
             <div class="passenger-card-header">
                 <h3 class="passenger-number">Passenger ${passengerCount + 1}</h3>
             </div>
-            
+
             <div class="form-grid">
                 <div class="form-group">
                     <label for="firstName-${passengerCount}" class="form-label">First Name</label>
-                    <input 
-                        type="text" 
-                        id="firstName-${passengerCount}" 
-                        name="passengers[${passengerCount}][firstName]" 
-                        class="form-input" 
+                    <input
+                        type="text"
+                        id="firstName-${passengerCount}"
+                        name="passengers[${passengerCount}][firstName]"
+                        class="form-input"
                         required
                         placeholder="Enter first name"
                     >
@@ -255,11 +223,11 @@
 
                 <div class="form-group">
                     <label for="lastName-${passengerCount}" class="form-label">Last Name</label>
-                    <input 
-                        type="text" 
-                        id="lastName-${passengerCount}" 
-                        name="passengers[${passengerCount}][lastName]" 
-                        class="form-input" 
+                    <input
+                        type="text"
+                        id="lastName-${passengerCount}"
+                        name="passengers[${passengerCount}][lastName]"
+                        class="form-input"
                         required
                         placeholder="Enter last name"
                     >
@@ -267,11 +235,11 @@
 
                 <div class="form-group">
                     <label for="email-${passengerCount}" class="form-label">Email Address</label>
-                    <input 
-                        type="email" 
-                        id="email-${passengerCount}" 
-                        name="passengers[${passengerCount}][email]" 
-                        class="form-input" 
+                    <input
+                        type="email"
+                        id="email-${passengerCount}"
+                        name="passengers[${passengerCount}][email]"
+                        class="form-input"
                         required
                         placeholder="your.email@example.com"
                     >
@@ -279,11 +247,11 @@
 
                 <div class="form-group">
                     <label for="phone-${passengerCount}" class="form-label">Phone Number</label>
-                    <input 
-                        type="tel" 
-                        id="phone-${passengerCount}" 
-                        name="passengers[${passengerCount}][phone]" 
-                        class="form-input" 
+                    <input
+                        type="tel"
+                        id="phone-${passengerCount}"
+                        name="passengers[${passengerCount}][phone]"
+                        class="form-input"
                         required
                         placeholder="+81 90-1234-5678"
                     >
@@ -310,7 +278,7 @@
 
         card.remove();
         passengerCount--;
-        
+
         updatePassengerNumbers();
         updateSummary();
         updateAddButtonState();
@@ -330,7 +298,7 @@
     const addRemoveAllButtons = () => {
         const firstCard = document.querySelector('.passenger-card');
         const existingBtn = firstCard.querySelector('.btn-remove-passenger');
-        
+
         if (passengerCount > 1 && !existingBtn) {
             const removeBtn = createRemoveButton();
             firstCard.querySelector('.passenger-card-header').appendChild(removeBtn);
@@ -342,28 +310,28 @@
     const autoFillForm = () => {
         const westernFirstNames = ['James', 'Olivia', 'William', 'Emily', 'Charlotte', 'George', 'Anna', 'Henry'];
         const westernLastNames = ['Smith', 'Johnson', 'Brown', 'Taylor', 'Wilson', 'Evans', 'Clark', 'Davis'];
-        
+
         const japaneseFirstNames = ['Yuki', 'Haruto', 'Sakura', 'Akira', 'Hana', 'Kenji', 'Aoi', 'Takeshi'];
         const japaneseLastNames = ['Tanaka', 'Suzuki', 'Yamamoto', 'Watanabe', 'Ito', 'Nakamura', 'Kobayashi', 'Sato'];
-        
+
         const randomItem = (arr) => arr[Math.floor(Math.random() * arr.length)];
         const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
-        
+
         const cards = document.querySelectorAll('.passenger-card');
-        
+
         cards.forEach((card, index) => {
             const i = card.dataset.passengerIndex ? Number(card.dataset.passengerIndex) : index;
-            
+
             // 30% chance for Japanese name
             const isJapanese = Math.random() < 0.30;
             const firstName = randomItem(isJapanese ? japaneseFirstNames : westernFirstNames);
             const lastName = randomItem(isJapanese ? japaneseLastNames : westernLastNames);
-            
+
             const firstNameInput = card.querySelector(`#firstName-${i}`);
             const lastNameInput = card.querySelector(`#lastName-${i}`);
             const emailInput = card.querySelector(`#email-${i}`);
             const phoneInput = card.querySelector(`#phone-${i}`);
-            
+
             if (firstNameInput) firstNameInput.value = firstName;
             if (lastNameInput) lastNameInput.value = lastName;
             if (emailInput) {
@@ -382,26 +350,141 @@
                 }
             }
         });
-        
+
         console.log(`✓ Filled ${cards.length} passenger form(s)`);
     };
 
-    // Event Listeners
-    selectedDayLabels.forEach((label) => {
-        label.addEventListener('click', (e) => {
-            e.preventDefault();
-            const label = e.currentTarget;
+    // Load ticket classes from the API and show those available on the selected day.
+    async function loadTicketClasses(day) {
+        ticketLoading.style.display = 'block';
+        ticketError.textContent = '';
+        ticketOptionsContainer.replaceChildren();
+        selectedTicketName.textContent = 'Loading...';
+        ticketPrice = 0;
+        updateSummary();
 
-            // Update visual and input selection
-            selectedDayLabels.forEach((lbl) => {
-                lbl.classList.remove('selected');
-                lbl.querySelector('input').checked = false;
-                lbl.querySelector('input').removeAttribute('checked');
+        try {
+            const response = await fetch('/api/ticket-classes');
+            if (!response.ok) throw new Error('Unable to load ticket classes.');
+
+            const ticketClasses = await response.json();
+            let hasSelectedClass = false;
+
+            ticketClasses.forEach((ticket) => {
+                const isAvailable = Array.isArray(ticket.availableDays) &&
+                    ticket.availableDays.includes(day.toLowerCase());
+
+                const price = tripDistance * Number(ticket.pricePerKm);
+
+                const label = document.createElement('label');
+                label.className = isAvailable ? 'ticket-card' : 'ticket-card unavailable';
+
+                const radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.name = 'ticketClass';
+                radio.value = ticket.class;
+                radio.dataset.name = ticket.name;
+                radio.dataset.price = String(price);
+                radio.required = true;
+                radio.disabled = !isAvailable;
+                radio.checked = isAvailable && !hasSelectedClass;
+
+                if (radio.checked) hasSelectedClass = true;
+
+                const content = document.createElement('div');
+                content.className = 'ticket-content';
+
+                const header = document.createElement('div');
+                header.className = 'ticket-header';
+
+                const name = document.createElement('h3');
+                name.className = 'ticket-name';
+                name.textContent = ticket.name;
+
+                const priceDisplay = document.createElement('div');
+                priceDisplay.className = 'ticket-price';
+
+                const priceSymbol = document.createElement('span');
+                priceSymbol.className = 'price-symbol';
+                priceSymbol.textContent = '¥';
+
+                const priceAmount = document.createElement('span');
+                priceAmount.className = 'price-amount';
+                priceAmount.textContent = price.toLocaleString();
+
+                priceDisplay.append(priceSymbol, priceAmount);
+
+                const description = document.createElement('p');
+                description.className = 'ticket-description';
+                description.textContent = isAvailable
+                    ? ticket.description
+                    : `${ticket.description} (Not available on ${day})`;
+
+                const amenities = document.createElement('ul');
+                amenities.className = 'amenities-list';
+
+                (ticket.amenities || []).forEach((amenity) => {
+                    const item = document.createElement('li');
+                    item.className = 'amenity-item';
+
+                    const icon = document.createElement('span');
+                    icon.className = 'amenity-icon';
+                    icon.textContent = '\u2713';
+
+                    const text = document.createElement('span');
+                    text.className = 'amenity-text';
+                    text.textContent = amenity;
+
+                    item.append(icon, text);
+                    amenities.appendChild(item);
+                });
+
+                header.append(name, priceDisplay);
+                content.append(header, description, amenities);
+
+                label.append(radio, content);
+                ticketOptionsContainer.appendChild(label);
             });
 
-            label.classList.add('selected');
-            label.querySelector('input').checked = true;
-            label.querySelector('input').setAttribute('checked', true);
+            const firstRadio = ticketOptionsContainer.querySelector(
+                'input[name="ticketClass"]:checked'
+            );
+
+            if (firstRadio) {
+                ticketPrice = Number(firstRadio.dataset.price);
+                selectedTicketName.textContent = firstRadio.dataset.name;
+                updateSummary();
+            } else {
+                selectedTicketName.textContent = 'None available';
+                ticketError.textContent = 'No ticket classes are available for this day.';
+            }
+        } catch (error) {
+            console.error('Error loading ticket classes:', error);
+            selectedTicketName.textContent = 'Unavailable';
+            ticketError.textContent = 'Unable to load ticket classes. Please refresh the page.';
+            ticketPrice = 0;
+            updateSummary();
+        } finally {
+            ticketLoading.style.display = 'none';
+        }
+    }
+
+    // Event Listeners
+    selectedDayLabels.forEach((dayLabel) => {
+        dayLabel.addEventListener('click', (e) => {
+            e.preventDefault();
+            const selectedLabel = e.currentTarget;
+            selectedDayLabels.forEach((label) => {
+                label.classList.remove('selected');
+                const input = label.querySelector('input');
+                input.checked = false;
+                input.removeAttribute('checked');
+            });
+            selectedLabel.classList.add('selected');
+            const selectedInput = selectedLabel.querySelector('input');
+            selectedInput.checked = true;
+            selectedInput.setAttribute('checked', 'checked');
+            loadTicketClasses(selectedInput.value);
         });
     });
 
@@ -415,27 +498,22 @@
         }
     });
 
-    ticketRadios.forEach((radio) => {
-        radio.addEventListener('change', (e) => {
-            e.preventDefault();
-            const selected = e.currentTarget;
-
-            // Update visual and input selection
-            ticketRadios.forEach((input) => {
-                input.checked = false;
-                input.removeAttribute('checked');
-            });
-
-            selected.checked = true;
-            selected.setAttribute('checked', true);
-
-            // Update summary
-            const ticketName = e.target.dataset.name;
-            ticketPrice = parseInt(e.target.dataset.price);
-            
-            selectedTicketName.textContent = ticketName;
+    ticketOptionsContainer.addEventListener('change', (e) => {
+        if (e.target.matches('input[name="ticketClass"]')) {
+            ticketPrice = Number(e.target.dataset.price);
+            selectedTicketName.textContent = e.target.dataset.name;
             updateSummary();
-        });
+        }
+    });
+
+    bookingForm.addEventListener('submit', (e) => {
+        const selectedTicket = ticketOptionsContainer.querySelector(
+            'input[name="ticketClass"]:checked'
+        );
+        if (!selectedTicket) {
+            e.preventDefault();
+            ticketError.textContent = 'Please select an available ticket class before continuing.';
+        }
     });
 
     document.getElementById('autofill').addEventListener('click', (e) => {
@@ -443,14 +521,11 @@
         autoFillForm();
     });
 
-    // Initialize ticket based on default selection
-    const selectedRadio = document.querySelector('input[name="ticketClass"]:checked');
-    if (selectedRadio) {
-        const ticketName = selectedRadio.dataset.name;
-        selectedTicketName.textContent = ticketName;
-        ticketPrice = parseInt(selectedRadio.dataset.price);
+    // Load ticket classes for the initially selected day.
+    const initialDay = document.querySelector('input[name="selectedDay"]:checked');
+    if (initialDay) {
+        loadTicketClasses(initialDay.value);
     }
-    updateSummary();
 </script>
 
 <%- include('../partials/footer') %>

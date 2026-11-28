@@ -368,3 +368,48 @@ article.route-detail {
         }
     }
 }
+
+
+.route-stations {
+    .station-info-btn {
+        margin-top: var(--space-sm);
+        padding: 0.6rem 1rem;
+        border: none;
+        border-radius: 6px;
+        background: var(--clr-primary);
+        color: white;
+        font: inherit;
+        cursor: pointer;
+    }
+
+    .station-info-btn:hover {
+        opacity: 0.85;
+    }
+
+    .station-info {
+        position: relative;
+        margin-top: var(--space-md);
+        padding: var(--space-lg);
+        border: 1px solid var(--clr-primary);
+        border-radius: 8px;
+        background: var(--clr-surface, white);
+    }
+
+    .station-info[hidden] {
+        display: none;
+    }
+
+    #close-station-info {
+        position: absolute;
+        top: 8px;
+        right: 12px;
+        border: none;
+        background: transparent;
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+
+    #station-info-content {
+        padding-right: 1.5rem;
+    }
+}
